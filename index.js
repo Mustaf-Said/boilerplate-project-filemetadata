@@ -3,25 +3,27 @@ var cors = require("cors");
 require("dotenv").config();
 const multer = require("multer");
 const fs = require("fs");
+const path = require("path");
 
 var app = express();
 
 app.use(cors());
-app.use("/public", express.static(process.cwd() + "/public"));
+app.use("/public", express.static(path.join(process.cwd(), "public")));
 
 // Kontrollera att "uploads"-mappen finns, annars skapa den
-if (!fs.existsSync("uploads")) {
-  fs.mkdirSync("uploads");
+const uploadsDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
 }
 
 app.get("/", function (req, res) {
-  res.sendFile(process.cwd() + "/views/index.html");
+  res.sendFile(path.join(process.cwd(), "views", "index.html"));
 });
 
 // Konfigurera lagring för uppladdade filer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Mappen där filer sparas
+    cb(null, uploadsDir); // Mappen där filer sparas
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`); // Anpassat filnamn
@@ -46,6 +48,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
 });
 
 // Starta servern
-app.listen(3000, () => {
-  console.log("Servern körs på http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servern körs på http://localhost:${PORT}`);
 });
