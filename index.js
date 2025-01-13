@@ -5,7 +5,8 @@ const multer = require("multer");
 /* let upload = multer(); */
 const fs = require("fs");
 const path = require("path");
-
+const bodyParser = require("body-parser");
+/* app.use(bodyParser.json()); */
 var app = express();
 
 app.use(cors());
