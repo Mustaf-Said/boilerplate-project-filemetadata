@@ -2,7 +2,7 @@ var express = require("express");
 var cors = require("cors");
 require("dotenv").config();
 const multer = require("multer");
-const upload = multer();
+// const upload = multer(); // Removed to avoid redeclaration
 
 var app = express();
 
@@ -12,16 +12,33 @@ app.use("/public", express.static(process.cwd() + "/public"));
 app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "/views/index.html");
 });
+// Konfigurera lagring för uppladdade filer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Mappen där filer sparas
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`); // Anpassat filnamn
+  },
+});
 
-app.post("/api/fileanalyse", upload.single("upfile"), (req, res) => {
+// Skapa multer-instansen
+const upload = multer({ storage: storage });
+
+// Rutt för filuppladdning
+app.post('/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'Ingen fil uppladdad' });
+  }
+
+  // Skicka filinformation som JSON
   res.json({
-    name: req.file.originalname,
-    type: req.file.mimetype,
-    size: req.file.size,
+    fileName: req.file.filename, // Filnamnet på servern
+    fileType: req.file.mimetype, // Filtyp (t.ex. image/jpeg)
+    fileSize: req.file.size,     // Filstorlek i bytes
   })
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, function () {
-  console.log("Your app is listening on port " + port);
-});
+// Starta servern
+app.listen(3000, () => {
+  console.log('Servern körs på http://localhost:3000');});
