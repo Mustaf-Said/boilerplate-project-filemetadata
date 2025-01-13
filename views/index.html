@@ -20,18 +20,23 @@
 
   <body>
     <div class="container">
-      <h1>API Project: File Metadata Microservice</h1>
+      <h2>API Project: File Metadata Microservice</h2>
 
-      <h2>Usage:</h2>
+      <h3>Usage:</h3>
       <p>Please Upload a File ...</p>
       <div class="view">
-        <h3 id="output"></h3>
+        <h4 id="output"></h4>
         <form
           enctype="multipart/form-data"
           method="POST"
           action="/api/fileanalyse"
         >
-          <input id="inputfield" type="file" name="upfile" placeholder="Upload"/>
+          <input
+            id="inputfield"
+            type="file"
+            name="upfile"
+            placeholder="Upload"
+          />
           <input id="button" type="submit" value="Upload" />
         </form>
       </div>

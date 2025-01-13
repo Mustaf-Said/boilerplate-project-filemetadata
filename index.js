@@ -1,7 +1,8 @@
 var express = require("express");
-const multer = require("multer");
 var cors = require("cors");
 require("dotenv").config();
+const multer = require("multer");
+const upload = multer();
 
 var app = express();
 
@@ -12,21 +13,12 @@ app.get("/", function (req, res) {
   res.sendFile(process.cwd() + "/views/index.html");
 });
 
-// Konfigurera uppladdningslagring
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Mappen där filer lagras
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Anpassat filnamn
-  },
-});
-
-// Skapa en multer-instans med ovanstående lagring
-const upload = multer({ storage: storage });
-app.post("/upload", upload.single("file"), (req, res) => {
-  // 'file' är namnet på fältet i formuläret
-  res.send(`Filen har laddats upp: ${req.file.filename}`);
+app.post("/api/fileanalyse", upload.single("upfile"), (req, res) => {
+  res.json({
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size,
+  })
 });
 
 const port = process.env.PORT || 3000;
